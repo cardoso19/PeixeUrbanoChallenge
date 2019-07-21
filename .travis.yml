@@ -1,0 +1,6 @@
+os: osx
+osx_image: xcode10.2
+language: swift
+xcode_project: PeixeUrbano/PeixeUrbano.xcodeproj
+xcode_scheme: PeixeUrbano
+xcode_sdk: iphonesimulator12.2
