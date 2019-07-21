@@ -24,7 +24,7 @@ class DefaultNavigationController: UINavigationController {
     
     //MARK: - Layout
     private func configColors() {
-        navigationBar.barTintColor = .mainBlue
+        navigationBar.barTintColor = UIColor.mainBlue
         navigationBar.tintColor = .white
     }
     
