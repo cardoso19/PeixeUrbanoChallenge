@@ -13,7 +13,10 @@
 import UIKit
 
 protocol CatalogDisplayLogic: class {
-    func displaySomething(viewModel: Catalog.Something.ViewModel)
+    func displayCatalog(viewModel: Catalog.CatalogModel.ViewModel)
+    func displayImage(viewModel: Catalog.ImageModel.ViewModel)
+    func displayLoader(viewModel: Catalog.Loader.ViewModel)
+    func displayError(viewModel: Error)
 }
 
 class CatalogViewController: UIViewController {
@@ -25,7 +28,8 @@ class CatalogViewController: UIViewController {
     private var interactor: CatalogBusinessLogic?
     private var router: (NSObjectProtocol & CatalogRoutingLogic & CatalogDataPassing)?
     private var dealCellIdentifier: String = "Deal"
-    private var deals: [String] = []
+    private var deals: [Catalog.CatalogModel.ViewModel.DealModel] = []
+    private var loader: UIActivityIndicatorView = UIActivityIndicatorView(style: .gray)
     
     // MARK: - Object Life Cycle
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -36,6 +40,13 @@ class CatalogViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         setup()
+    }
+    
+    convenience init(type: CatalogType) {
+        self.init(nibName: nil, bundle: nil)
+        tabBarItem.title = type.title
+        tabBarItem.image = type.tabBarIcon
+        interactor?.selectCatalogType(request: Catalog.TypeModel.Request(type: type))
     }
     
     // MARK: - Setup
@@ -55,7 +66,13 @@ class CatalogViewController: UIViewController {
     // MARK: - View Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         prepareComponents()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        doDataRequest()
     }
     
     //MARK: - Config Components
@@ -64,10 +81,12 @@ class CatalogViewController: UIViewController {
         setDelegatesnAndDataSources()
         registerCells()
         layoutTableView()
+        layoutLoader()
     }
     
     private func createVisualComponents() {
         let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         tableViewContent = tableView
     }
@@ -81,21 +100,78 @@ class CatalogViewController: UIViewController {
     }
     
     private func layoutTableView() {
+        tableViewContent.rowHeight = -1
         tableViewContent.separatorStyle = .none
+        let views: [String: Any] = ["tableView": tableViewContent!]
+        var allConstraints: [NSLayoutConstraint] = []
+        let horizontalConstraint = NSLayoutConstraint.constraints(
+            withVisualFormat: "H:|-0-[tableView]-0-|",
+            metrics: nil,
+            views: views)
+        allConstraints += horizontalConstraint
+        let verticalConstraint = NSLayoutConstraint.constraints(
+            withVisualFormat: "V:|-[tableView]-|",
+            metrics: nil,
+            views: views)
+        allConstraints += verticalConstraint
+        NSLayoutConstraint.activate(allConstraints)
     }
     
-    // MARK: - Do something
-    func doSomething() {
-        let request = Catalog.Something.Request()
-        interactor?.doSomething(request: request)
+    private func layoutLoader() {
+        loader.center = view.center
+        loader.alpha = 0.0
+        loader.stopAnimating()
+        view.addSubview(loader)
+    }
+    
+    //MARK: - Request
+    func doDataRequest() {
+        interactor?.doCatalogRequest()
     }
 }
 
 // MARK: - CatalogDisplayLogic
 extension CatalogViewController: CatalogDisplayLogic {
     
-    func displaySomething(viewModel: Catalog.Something.ViewModel) {
-        //nameTextField.text = viewModel.name
+    func displayCatalog(viewModel: Catalog.CatalogModel.ViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            self?.deals = viewModel.deals
+            self?.tableViewContent.reloadData()
+        }
+    }
+    
+    func displayImage(viewModel: Catalog.ImageModel.ViewModel) {
+        DispatchQueue.main.async {
+            if let cell = self.tableViewContent.cellForRow(at: viewModel.indexPath) as? DealTableViewCell {
+                cell.imageViewDeal.image = viewModel.image
+            }
+        }
+    }
+    
+    func displayLoader(viewModel: Catalog.Loader.ViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            if viewModel.isLoaderVisible {
+                self?.loader.startAnimating()
+                UIView.animate(withDuration: 0.15) {
+                    self?.tableViewContent.alpha = 0
+                }
+                UIView.animate(withDuration: 0.25) {
+                    self?.loader.alpha = 1.0
+                }
+            } else {
+                self?.loader.stopAnimating()
+                UIView.animate(withDuration: 0.15) {
+                    self?.loader.alpha = 0.0
+                }
+                UIView.animate(withDuration: 0.25) {
+                    self?.tableViewContent.alpha = 1.0
+                }
+            }
+        }
+    }
+    
+    func displayError(viewModel: Error) {
+        debugPrint(viewModel)
     }
 }
 
@@ -112,7 +188,17 @@ extension CatalogViewController: UITableViewDataSource {
             else {
                 fatalError("Error loading cell of type: \(DealTableViewCell.description())")
         }
+
+        let deal = deals[indexPath.row]
         cell.selectionStyle = .none
+        cell.labelPartnerName.text = deal.partnerName
+        cell.labelDealTitle.text = deal.title
+        cell.labelDealPriceDescription.text = deal.priceDescription
+        cell.labelDealPriceSymbol.text = deal.priceSymbol
+        cell.labelDealPrice.text = deal.price
+        cell.imageViewCutted.isHidden = !deal.isImageCuttedVisible
+        interactor?.doDownloadImage(request: Catalog.ImageModel.Request(url: deal.imageUrl,
+                                                                        indexPath: indexPath))
         return cell
     }
 }

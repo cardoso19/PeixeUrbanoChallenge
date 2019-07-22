@@ -14,13 +14,10 @@ class HomeTabBarController: UITabBarController {
     convenience init(viewControllers: [UIViewController]) {
         self.init()
         setViewControllers(viewControllers, animated: false)
+        tabBar.tintColor = UIColor.mainOrange
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    override var preferredStatusBarStyle : UIStatusBarStyle {
-        return UIStatusBarStyle.lightContent
     }
 }

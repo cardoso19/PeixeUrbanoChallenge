@@ -19,15 +19,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let cityViewController = CatalogViewController()
-        let cityNavController = DefaultNavigationController(title: nil,
-                                                            rootViewController: cityViewController)
-        let travelViewController = CatalogViewController()
-        let travelNavController = DefaultNavigationController(title: nil,
-                                                              rootViewController: travelViewController)
-        let productsViewController = CatalogViewController()
-        let productsNavController = DefaultNavigationController(title: nil,
-                                                                rootViewController: productsViewController)
+        let cityViewController = CatalogViewController(type: .city)
+        let cityNavController = DefaultNavigationController(rootViewController: cityViewController)
+        let travelViewController = CatalogViewController(type: .travel)
+        let travelNavController = DefaultNavigationController(rootViewController: travelViewController)
+        let productsViewController = CatalogViewController(type: .products)
+        let productsNavController = DefaultNavigationController(rootViewController: productsViewController)
         let homeController = HomeTabBarController(viewControllers: [cityNavController,
                                                                     travelNavController,
                                                                     productsNavController])

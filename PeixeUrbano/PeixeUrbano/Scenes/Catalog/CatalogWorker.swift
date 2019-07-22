@@ -14,7 +14,15 @@ import UIKit
 
 class CatalogWorker {
     
-    func doSomeWork() {
-        
+    func requestDeals(request: Catalog.CatalogModel.Request) {
+        ConnectionUtil.shared.request(on: request.type.requestURL,
+                                      method: .get,
+                                      parameters: nil,
+                                      completion: request.completion)
+    }
+    
+    func requestImage(request: Catalog.ImageModel.WorkerRequest) {
+        ConnectionUtil.shared.downloadImage(on: URL(string: request.url),
+                                            completion: request.completion)
     }
 }

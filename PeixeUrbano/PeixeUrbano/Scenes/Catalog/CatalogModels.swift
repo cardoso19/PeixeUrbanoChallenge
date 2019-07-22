@@ -14,16 +14,61 @@ import UIKit
 
 enum Catalog {
     
-    // MARK: - Use Cases
-    enum Something {
-        struct Request {
-            
-        }
+    enum Loader {
         struct Response {
-            
+            let isLoaderVisible: Bool
         }
         struct ViewModel {
+            let isLoaderVisible: Bool
+        }
+    }
+    
+    enum TypeModel {
+        struct Request {
+            let type: CatalogType
+        }
+    }
+    
+    enum CatalogModel {
+        struct Request {
+            let type: CatalogType
+            let completion: (Result<ServerResponse<CatalogReponse>, Error>) -> Void
+        }
+        struct Response {
+            let catalog: CatalogReponse
+        }
+        struct ViewModel {
+            struct DealModel {
+                let isImageCuttedVisible: Bool
+                let imageUrl: String
+                let partnerName: String
+                let title: String
+                let priceDescription: String
+                let priceSymbol: String
+                let price: String
+            }
             
+            let banners: [Banner]
+            let deals: [DealModel]
+        }
+    }
+    
+    enum ImageModel {
+        struct Request {
+            let url: String
+            let indexPath: IndexPath
+        }
+        struct WorkerRequest {
+            let url: String
+            let completion: (Result<UIImage, Error>) -> Void
+        }
+        struct Response {
+            let image: UIImage
+            let indexPath: IndexPath
+        }
+        struct ViewModel {
+            let image: UIImage
+            let indexPath: IndexPath
         }
     }
 }

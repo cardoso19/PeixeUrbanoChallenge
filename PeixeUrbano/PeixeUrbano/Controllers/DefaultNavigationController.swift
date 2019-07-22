@@ -11,11 +11,6 @@ import UIKit
 class DefaultNavigationController: UINavigationController {
 
     //MARK: - Life Cycle
-    convenience init(title: String?, rootViewController: UIViewController) {
-        self.init(rootViewController: rootViewController)
-        self.title = title
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configColors()

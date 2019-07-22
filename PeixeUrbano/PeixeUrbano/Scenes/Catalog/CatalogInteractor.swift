@@ -13,26 +13,53 @@
 import UIKit
 
 protocol CatalogBusinessLogic {
-    func doSomething(request: Catalog.Something.Request)
+    func selectCatalogType(request: Catalog.TypeModel.Request)
+    func doCatalogRequest()
+    func doDownloadImage(request: Catalog.ImageModel.Request)
 }
 
 protocol CatalogDataStore {
-    //var name: String { get set }
+    var type: CatalogType! { get set }
 }
 
 class CatalogInteractor: CatalogBusinessLogic, CatalogDataStore {
     
     // MARK: - Variables
     var presenter: CatalogPresentationLogic?
-    var worker: CatalogWorker?
-    //var name: String = ""
+    var worker = CatalogWorker()
+    var type: CatalogType!
     
-    // MARK: - Do something
-    func doSomething(request: Catalog.Something.Request) {
-        worker = CatalogWorker()
-        worker?.doSomeWork()
-        
-        let response = Catalog.Something.Response()
-        presenter?.presentSomething(response: response)
+    // MARK: - Catalog
+    func selectCatalogType(request: Catalog.TypeModel.Request) {
+        type = request.type
+    }
+    
+    func doCatalogRequest() {
+        presenter?.presentLoader(response: Catalog.Loader.Response(isLoaderVisible: true))
+        let completion: (Result<ServerResponse<CatalogReponse>, Error>) -> Void = { [weak self] result in
+            self?.presenter?.presentLoader(response: Catalog.Loader.Response(isLoaderVisible: false))
+            switch result {
+            case .success(let serverResponse):
+                self?.presenter?.presentCatalog(response: Catalog.CatalogModel.Response(catalog: serverResponse.response))
+            case .failure(let error):
+                self?.presenter?.presentError(response: error)
+            }
+        }
+        worker.requestDeals(request: Catalog.CatalogModel.Request(type: type,
+                                                                  completion: completion))
+    }
+    
+    func doDownloadImage(request: Catalog.ImageModel.Request) {
+        let completion: (Result<UIImage, Error>) -> Void = { [weak self] result in
+            switch result {
+            case .success(let image):
+                self?.presenter?.presentImage(response: Catalog.ImageModel.Response(image: image,
+                                                                                    indexPath: request.indexPath))
+            case .failure(let error):
+                self?.presenter?.presentError(response: error)
+            }
+        }
+        worker.requestImage(request: Catalog.ImageModel.WorkerRequest(url: request.url,
+                                                                      completion: completion))
     }
 }
