@@ -15,7 +15,9 @@ import UIKit
 protocol CatalogDisplayLogic: class {
     func displayCatalog(viewModel: Catalog.CatalogModel.ViewModel)
     func displayImage(viewModel: Catalog.ImageModel.ViewModel)
+    func displayBanner(viewModel: Catalog.Banners.ViewModel)
     func displayLoader(viewModel: Catalog.Loader.ViewModel)
+    func displayFavorite(viewModel: Catalog.Favorite.ViewModel)
     func displayError(viewModel: Error)
 }
 
@@ -28,7 +30,9 @@ class CatalogViewController: UIViewController {
     private var interactor: CatalogBusinessLogic?
     private var router: (NSObjectProtocol & CatalogRoutingLogic & CatalogDataPassing)?
     private var dealCellIdentifier: String = "Deal"
+    private var bannerCellIdentifier: String = "Banner"
     private var deals: [Catalog.CatalogModel.ViewModel.DealModel] = []
+    private var banners: [Catalog.CatalogModel.ViewModel.BannerModel] = []
     private var loader: UIActivityIndicatorView = UIActivityIndicatorView(style: .gray)
     
     // MARK: - Object Life Cycle
@@ -97,11 +101,13 @@ class CatalogViewController: UIViewController {
     
     private func registerCells() {
         tableViewContent.register(DealTableViewCell.self, forCellReuseIdentifier: dealCellIdentifier)
+        tableViewContent.register(BannerTableViewCell.self, forCellReuseIdentifier: bannerCellIdentifier)
     }
     
     private func layoutTableView() {
         tableViewContent.rowHeight = -1
         tableViewContent.separatorStyle = .none
+        tableViewContent.sectionHeaderHeight = 0
         let views: [String: Any] = ["tableView": tableViewContent!]
         var allConstraints: [NSLayoutConstraint] = []
         let horizontalConstraint = NSLayoutConstraint.constraints(
@@ -125,7 +131,7 @@ class CatalogViewController: UIViewController {
     }
     
     //MARK: - Request
-    func doDataRequest() {
+    private func doDataRequest() {
         interactor?.doCatalogRequest()
     }
 }
@@ -136,14 +142,23 @@ extension CatalogViewController: CatalogDisplayLogic {
     func displayCatalog(viewModel: Catalog.CatalogModel.ViewModel) {
         DispatchQueue.main.async { [weak self] in
             self?.deals = viewModel.deals
+            self?.banners = viewModel.banners
             self?.tableViewContent.reloadData()
         }
     }
     
     func displayImage(viewModel: Catalog.ImageModel.ViewModel) {
-        DispatchQueue.main.async {
-            if let cell = self.tableViewContent.cellForRow(at: viewModel.indexPath) as? DealTableViewCell {
+        DispatchQueue.main.async { [weak self] in
+            if let cell = self?.tableViewContent.cellForRow(at: viewModel.indexPath) as? DealTableViewCell {
                 cell.imageViewDeal.image = viewModel.image
+            }
+        }
+    }
+    
+    func displayBanner(viewModel: Catalog.Banners.ViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            if let cell = self?.tableViewContent.cellForRow(at: IndexPath(item: 0, section: 0)) as? BannerTableViewCell {
+                cell.add(image: viewModel.image, at: viewModel.index)
             }
         }
     }
@@ -170,35 +185,86 @@ extension CatalogViewController: CatalogDisplayLogic {
         }
     }
     
+    func displayFavorite(viewModel: Catalog.Favorite.ViewModel) {
+        DispatchQueue.main.async { [weak self] in
+            let section = self?.banners.count == 0 ? 0 : 1
+            guard
+                let cell = self?.tableViewContent.cellForRow(at: IndexPath(row: viewModel.row, section: section)) as? DealTableViewCell
+                else {
+                    return
+            }
+            self?.deals[viewModel.row].favoriteImage = viewModel.favoriteImage
+            cell.buttonFavorite.setImage(viewModel.favoriteImage, for: .normal)
+        }
+    }
+    
     func displayError(viewModel: Error) {
-        debugPrint(viewModel)
+        DispatchQueue.main.async { [weak self] in
+            let alert = UIAlertController(title: "Erro",
+                                          message: viewModel.localizedDescription,
+                                          preferredStyle: .alert)
+            let action = UIAlertAction(title: "Ok",
+                                       style: .cancel,
+                                       handler: nil)
+            alert.addAction(action)
+            self?.present(alert, animated: true, completion: nil)
+        }
     }
 }
 
 //MARK: - UITableViewDataSource
 extension CatalogViewController: UITableViewDataSource {
     
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1 + (banners.count > 0 ? 1 : 0)
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return deals.count
+        if section == 0 && banners.count > 0 {
+            return 1
+        } else {
+            return deals.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: dealCellIdentifier) as? DealTableViewCell
-            else {
-                fatalError("Error loading cell of type: \(DealTableViewCell.description())")
+        if indexPath.section == 0 && banners.count > 0 {
+            guard
+                let cell = tableView.dequeueReusableCell(withIdentifier: bannerCellIdentifier) as? BannerTableViewCell
+                else {
+                    fatalError("Error loading cell of type: \(BannerTableViewCell.description())")
+            }
+            cell.setNumberOfBanners(banners.count)
+            interactor?.doDownloadBanners(request: Catalog.Banners.Request(banners: banners))
+            return cell
+        } else {
+            guard
+                let cell = tableView.dequeueReusableCell(withIdentifier: dealCellIdentifier) as? DealTableViewCell
+                else {
+                    fatalError("Error loading cell of type: \(DealTableViewCell.description())")
+            }
+            cell.delegate = self
+            cell.buttonFavorite.tag = indexPath.row
+            let deal = deals[indexPath.row]
+            cell.selectionStyle = .none
+            cell.labelPartnerName.text = deal.partnerName
+            cell.labelDealTitle.text = deal.title
+            cell.labelDealPriceDescription.text = deal.priceDescription
+            cell.labelDealPriceSymbol.text = deal.priceSymbol
+            cell.labelDealPrice.text = deal.price
+            cell.buttonFavorite.setImage(deal.favoriteImage, for: .normal)
+            cell.imageViewCutted.isHidden = !deal.isImageCuttedVisible
+            interactor?.doDownloadImage(request: Catalog.ImageModel.Request(url: deal.imageUrl,
+                                                                            indexPath: indexPath))
+            return cell
         }
+    }
+}
 
-        let deal = deals[indexPath.row]
-        cell.selectionStyle = .none
-        cell.labelPartnerName.text = deal.partnerName
-        cell.labelDealTitle.text = deal.title
-        cell.labelDealPriceDescription.text = deal.priceDescription
-        cell.labelDealPriceSymbol.text = deal.priceSymbol
-        cell.labelDealPrice.text = deal.price
-        cell.imageViewCutted.isHidden = !deal.isImageCuttedVisible
-        interactor?.doDownloadImage(request: Catalog.ImageModel.Request(url: deal.imageUrl,
-                                                                        indexPath: indexPath))
-        return cell
+//MARK: - DealTableViewCellDelegate
+extension CatalogViewController: DealTableViewCellDelegate {
+    
+    func didTouchUpInsideFavorite(on tag: Int) {
+        interactor?.doFavorite(request: Catalog.Favorite.Request(row: tag))
     }
 }

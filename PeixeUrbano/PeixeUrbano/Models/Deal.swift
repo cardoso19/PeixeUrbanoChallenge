@@ -19,6 +19,7 @@ struct Deal: Codable {
     let showDiscount: Bool
     let minSalePrice: NSNumberCodable
     let fullPrice: NSNumberCodable
+    var isFavorite: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case category = "deal_category"

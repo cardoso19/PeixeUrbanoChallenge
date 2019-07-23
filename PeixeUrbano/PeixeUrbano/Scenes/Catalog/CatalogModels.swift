@@ -23,6 +23,39 @@ enum Catalog {
         }
     }
     
+    enum Banners {
+        struct Request {
+            let banners: [CatalogModel.ViewModel.BannerModel]
+        }
+        struct WorkerRequest {
+            let url: String
+            let index: Int
+            let completion: (Int, Result<UIImage, Error>) -> Void
+        }
+        struct Response {
+            let image: UIImage
+            let index: Int
+        }
+        struct ViewModel {
+            let image: UIImage
+            let index: Int
+        }
+    }
+    
+    enum Favorite {
+        struct Request {
+            let row: Int
+        }
+        struct Response {
+            let isFavorite: Bool
+            let row: Int
+        }
+        struct ViewModel {
+            let favoriteImage: UIImage?
+            let row: Int
+        }
+    }
+    
     enum TypeModel {
         struct Request {
             let type: CatalogType
@@ -46,9 +79,13 @@ enum Catalog {
                 let priceDescription: String
                 let priceSymbol: String
                 let price: String
+                var favoriteImage: UIImage?
+            }
+            struct BannerModel {
+                let imageUrl: String
             }
             
-            let banners: [Banner]
+            let banners: [BannerModel]
             let deals: [DealModel]
         }
     }

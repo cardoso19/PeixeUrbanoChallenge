@@ -16,10 +16,13 @@ protocol CatalogBusinessLogic {
     func selectCatalogType(request: Catalog.TypeModel.Request)
     func doCatalogRequest()
     func doDownloadImage(request: Catalog.ImageModel.Request)
+    func doDownloadBanners(request: Catalog.Banners.Request)
+    func doFavorite(request: Catalog.Favorite.Request)
 }
 
 protocol CatalogDataStore {
     var type: CatalogType! { get set }
+    var deals: [Deal]? { get set }
 }
 
 class CatalogInteractor: CatalogBusinessLogic, CatalogDataStore {
@@ -28,6 +31,7 @@ class CatalogInteractor: CatalogBusinessLogic, CatalogDataStore {
     var presenter: CatalogPresentationLogic?
     var worker = CatalogWorker()
     var type: CatalogType!
+    var deals: [Deal]?
     
     // MARK: - Catalog
     func selectCatalogType(request: Catalog.TypeModel.Request) {
@@ -40,6 +44,7 @@ class CatalogInteractor: CatalogBusinessLogic, CatalogDataStore {
             self?.presenter?.presentLoader(response: Catalog.Loader.Response(isLoaderVisible: false))
             switch result {
             case .success(let serverResponse):
+                self?.deals = serverResponse.response.deals
                 self?.presenter?.presentCatalog(response: Catalog.CatalogModel.Response(catalog: serverResponse.response))
             case .failure(let error):
                 self?.presenter?.presentError(response: error)
@@ -61,5 +66,29 @@ class CatalogInteractor: CatalogBusinessLogic, CatalogDataStore {
         }
         worker.requestImage(request: Catalog.ImageModel.WorkerRequest(url: request.url,
                                                                       completion: completion))
+    }
+    
+    func doDownloadBanners(request: Catalog.Banners.Request) {
+        let completion: (Int, Result<UIImage, Error>) -> Void = { [weak self] index, result in
+            switch result {
+            case .success(let image):
+                self?.presenter?.presentBanner(response: Catalog.Banners.Response(image: image,
+                                                                                  index: index))
+            case .failure(let error):
+                self?.presenter?.presentError(response: error)
+            }
+        }
+        for (index, banner) in request.banners.enumerated() {
+            worker.requestBanner(request: Catalog.Banners.WorkerRequest(url: banner.imageUrl,
+                                                                        index: index,
+                                                                        completion: completion))
+        }
+    }
+    
+    func doFavorite(request: Catalog.Favorite.Request) {
+        guard let isFavorite = deals?[request.row].isFavorite else { return }
+        deals?[request.row].isFavorite = !isFavorite
+        let response = Catalog.Favorite.Response(isFavorite: !isFavorite, row: request.row)
+        presenter?.presentFavorite(response: response)
     }
 }

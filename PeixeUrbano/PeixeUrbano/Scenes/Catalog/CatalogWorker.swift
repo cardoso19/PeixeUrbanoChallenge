@@ -25,4 +25,10 @@ class CatalogWorker {
         ConnectionUtil.shared.downloadImage(on: URL(string: request.url),
                                             completion: request.completion)
     }
+    
+    func requestBanner(request: Catalog.Banners.WorkerRequest) {
+        ConnectionUtil.shared.downloadImage(on: URL(string: request.url)) { result in
+            request.completion(request.index, result)
+        }
+    }
 }

@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol DealTableViewCellDelegate: NSObjectProtocol {
+    func didTouchUpInsideFavorite(on tag: Int)
+}
+
 class DealTableViewCell: UITableViewCell {
     
     //MARK: - Visual Components
@@ -21,6 +25,7 @@ class DealTableViewCell: UITableViewCell {
     weak var buttonFavorite: UIButton!
     private weak var gradientLayer: CAGradientLayer!
     private let imageViewDealHeight: CGFloat = 250
+    weak var delegate: DealTableViewCellDelegate?
     
     //MARK: - Life Cycle
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -33,12 +38,19 @@ class DealTableViewCell: UITableViewCell {
         prepareLayout()
     }
     
+    //MARK: - Actions
+    @objc func actionFavorite(sender: UIButton) {
+        delegate?.didTouchUpInsideFavorite(on: sender.tag)
+    }
+    
     //MARK: - Layout
     private func prepareLayout() {
         createComponents()
         layoutLabels()
         layoutImage()
         layoutButton()
+        addGradientLayer()
+        configButtonAction()
     }
     
     private func createComponents() {
@@ -62,26 +74,7 @@ class DealTableViewCell: UITableViewCell {
         viewPriceDescription.addSubview(imageViewCutted)
         contentView.addSubview(viewTop)
         contentView.addSubview(stackViewBottom)
-        stackViewPrice.axis = .vertical
-        stackViewBottom.axis = .horizontal
-        stackViewPriceValue.axis = .horizontal
-        stackViewPrice.spacing = 8
-        stackViewBottom.spacing = 16
-        stackViewPriceValue.spacing = 2
-        stackViewBottom.distribution = .fillProportionally
-        stackViewPrice.alignment = .center
-        labelDealPriceSymbol.setContentCompressionResistancePriority(.required,
-                                                                     for: .horizontal)
-        labelDealPriceDescription.setContentCompressionResistancePriority(.required,
-                                                                          for: .horizontal)
-        labelDealPrice.setContentCompressionResistancePriority(.required,
-                                                               for: .horizontal)
-        labelDealPriceSymbol.setContentCompressionResistancePriority(.required,
-                                                                     for: .vertical)
-        labelDealPriceDescription.setContentCompressionResistancePriority(.required,
-                                                                          for: .vertical)
-        labelDealPrice.setContentCompressionResistancePriority(.required,
-                                                               for: .vertical)
+        
         self.imageViewDeal = imageViewDeal
         self.imageViewCutted = imageViewCutted
         self.labelPartnerName = labelPartnerName
@@ -90,52 +83,59 @@ class DealTableViewCell: UITableViewCell {
         self.labelDealPriceDescription = labelDealPriceDescription
         self.labelDealPriceSymbol = labelDealPriceSymbol
         self.labelDealPrice = labelDealPrice
-        let views: [String: UIView] = ["viewTop": viewTop,
-                                       "viewPriceDescription": viewTop,
-                                       "imageViewDeal": imageViewDeal,
-                                       "imageViewCutted": imageViewCutted,
-                                       "labelPartnerName": labelPartnerName,
-                                       "buttonFavorite": buttonFavorite,
-                                       "labelDealTitle": labelDealTitle,
-                                       "labelDealPriceDescription": labelDealPriceDescription,
-                                       "labelDealPriceSymbol": labelDealPriceSymbol,
-                                       "labelDealPrice": labelDealPrice,
-                                       "stackViewPriceValue": stackViewPriceValue,
-                                       "stackViewPrice": stackViewPrice,
-                                       "stackViewBottom": stackViewBottom]
-        createConstraints(on: views)
+        UIView.disableTranslatesAutoresizingMaskIntoConstraints(on: [viewTop,
+                                                                     viewPriceDescription,
+                                                                     imageViewDeal,
+                                                                     imageViewCutted,
+                                                                     labelPartnerName,
+                                                                     buttonFavorite,
+                                                                     labelDealTitle,
+                                                                     labelDealPriceDescription,
+                                                                     labelDealPriceSymbol,
+                                                                     labelDealPrice,
+                                                                     stackViewPriceValue,
+                                                                     stackViewPrice,
+                                                                     stackViewBottom])
+        layout(stackViews: ["stackViewPrice": stackViewPrice,
+                            "stackViewBottom": stackViewBottom,
+                            "stackViewPriceValue": stackViewPriceValue])
+        createConstraints(on: ["labelPartnerName": labelPartnerName,
+                               "buttonFavorite": buttonFavorite,
+                               "imageViewDeal": imageViewDeal,
+                               "viewTop": viewTop,
+                               "stackViewBottom": stackViewBottom,
+                               "labelDealPriceDescription": labelDealPriceDescription,
+                               "imageViewCutted": imageViewCutted])
         layoutIfNeeded()
     }
     
     private func layoutLabels() {
-        labelPartnerName.textColor = UIColor.textLightGray
-        labelPartnerName.font = UIFont.systemFont(ofSize: 16)
-        labelDealTitle.textColor = UIColor.textBlack
-        labelDealTitle.font = UIFont.systemFont(ofSize: 16)
         labelDealTitle.numberOfLines = 2
-        labelDealTitle.textAlignment = .left
-        labelDealPriceDescription.textColor = UIColor.textGray
-        labelDealPriceDescription.font = UIFont.systemFont(ofSize: 14)
-        labelDealPriceDescription.textAlignment = .center
-        labelDealPriceSymbol.textColor = UIColor.mainOrange
-        labelDealPriceSymbol.font = UIFont.systemFont(ofSize: 14)
-        labelDealPriceSymbol.textAlignment = .center
-        labelDealPrice.textColor = UIColor.mainOrange
-        labelDealPrice.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        labelDealPrice.textAlignment = .center
+        labelPartnerName.set(textColor: UIColor.textLightGray,
+                             font: UIFont.systemFont(ofSize: 16),
+                             textAlignment: .left)
+        labelDealTitle.set(textColor: UIColor.textBlack,
+                           font: UIFont.systemFont(ofSize: 16),
+                           textAlignment: .left)
+        labelDealPriceDescription.set(textColor: UIColor.textGray,
+                                      font: UIFont.systemFont(ofSize: 14),
+                                      textAlignment: .center)
+        labelDealPriceSymbol.set(textColor: UIColor.mainOrange,
+                                 font: UIFont.systemFont(ofSize: 14),
+                                 textAlignment: .center)
+        labelDealPrice.set(textColor: UIColor.mainOrange,
+                           font: UIFont.systemFont(ofSize: 18, weight: .semibold),
+                           textAlignment: .center)
+        
+        labelDealPriceSymbol.setContentCompressionResistancePriority(to: [.required, .required],
+                                                                     in: [.vertical, .horizontal])
+        labelDealPriceDescription.setContentCompressionResistancePriority(to: [.required, .required],
+                                                                          in: [.vertical, .horizontal])
+        labelDealPrice.setContentCompressionResistancePriority(to: [.required, .required],
+                                                               in: [.vertical, .horizontal])
     }
     
     private func layoutImage() {
-        let initialColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
-        let finalColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.6)
-        let gradient = CAGradientLayer()
-        gradient.frame = CGRect(origin: .zero,
-                                size: CGSize(width: UIScreen.main.bounds.width,
-                                             height: imageViewDealHeight))
-        gradient.colors = [initialColor.cgColor, finalColor.cgColor]
-        gradient.locations = [0.75, 1.0]
-        imageViewDeal.layer.addSublayer(gradient)
-        gradientLayer = gradient
         imageViewCutted.image = UIImage(named: "cutted")
         imageViewCutted.isHidden = true
     }
@@ -145,13 +145,44 @@ class DealTableViewCell: UITableViewCell {
                                                         left: 10,
                                                         bottom: 10,
                                                         right: 10)
-        buttonFavorite.setImage(UIImage(named: "heart"), for: .normal)
         buttonFavorite.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.4)
         buttonFavorite.layer.cornerRadius = buttonFavorite.bounds.width / 2
     }
     
+    private func layout(stackViews: [String: UIStackView]) {
+        guard
+            let stackViewPrice = stackViews["stackViewPrice"],
+            let stackViewBottom = stackViews["stackViewBottom"],
+            let stackViewPriceValue = stackViews["stackViewPriceValue"]
+            else {
+                fatalError("Stackviews not defined")
+        }
+        stackViewPrice.axis = .vertical
+        stackViewBottom.axis = .horizontal
+        stackViewPriceValue.axis = .horizontal
+        stackViewPrice.spacing = 8
+        stackViewBottom.spacing = 16
+        stackViewPriceValue.spacing = 2
+        stackViewBottom.distribution = .fillProportionally
+        stackViewPrice.alignment = .center
+    }
+    
+    private func addGradientLayer() {
+        let gradient = CAGradientLayer()
+        gradient.frame = CGRect(origin: .zero,
+                                size: CGSize(width: UIScreen.main.bounds.width,
+                                             height: imageViewDealHeight))
+        gradient.colors = [#colorLiteral(red: 0, green: 0, blue: 0, alpha: 0).cgColor, #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.6).cgColor]
+        gradient.locations = [0.75, 1.0]
+        imageViewDeal.layer.addSublayer(gradient)
+        gradientLayer = gradient
+    }
+    
+    private func configButtonAction() {
+        buttonFavorite.addTarget(self, action: #selector(actionFavorite(sender:)), for: .touchUpInside)
+    }
+    
     private func createConstraints(on views: [String: UIView]) {
-        disableAutoresizingMask(on: views)
         var allConstraints: [NSLayoutConstraint] = []
         let topContentHorizontalConstraint = NSLayoutConstraint.constraints(
             withVisualFormat: "H:|-16-[labelPartnerName]-16-[buttonFavorite(40)]-16-|",
@@ -210,11 +241,5 @@ class DealTableViewCell: UITableViewCell {
             views: views)
         allConstraints += imageCuttedVerticalConstraint
         NSLayoutConstraint.activate(allConstraints)
-    }
-    
-    private func disableAutoresizingMask(on views: [String: UIView]) {
-        for item in views.enumerated() {
-            item.element.value.translatesAutoresizingMaskIntoConstraints = false
-        }
     }
 }

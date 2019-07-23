@@ -19,6 +19,12 @@
 		AF11DA3F22E4C2DE0031861F /* ConnectionUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA3D22E4C2DE0031861F /* ConnectionUtil.swift */; };
 		AF11DA4722E52D380031861F /* NSNumberExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA4622E52D380031861F /* NSNumberExtension.swift */; };
 		AF11DA4822E52D380031861F /* NSNumberExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA4622E52D380031861F /* NSNumberExtension.swift */; };
+		AF11DA4A22E677C00031861F /* BannerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA4922E677C00031861F /* BannerTableViewCell.swift */; };
+		AF11DA4B22E677C00031861F /* BannerTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA4922E677C00031861F /* BannerTableViewCell.swift */; };
+		AF11DA5022E67C070031861F /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA4F22E67C070031861F /* UIViewExtension.swift */; };
+		AF11DA5122E67C070031861F /* UIViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA4F22E67C070031861F /* UIViewExtension.swift */; };
+		AF11DA5322E685850031861F /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA5222E685850031861F /* UILabelExtension.swift */; };
+		AF11DA5422E685850031861F /* UILabelExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF11DA5222E685850031861F /* UILabelExtension.swift */; };
 		AF74B1B522E3CA4E00C8D757 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF74B1B422E3CA4E00C8D757 /* AppDelegate.swift */; };
 		AF74B1BD22E3CA4E00C8D757 /* PeixeUrbano.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AF74B1BB22E3CA4E00C8D757 /* PeixeUrbano.xcdatamodeld */; };
 		AF74B1BF22E3CA5000C8D757 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AF74B1BE22E3CA5000C8D757 /* Assets.xcassets */; };
@@ -88,6 +94,9 @@
 		AF11DA3A22E4C0C70031861F /* CatalogType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogType.swift; sourceTree = "<group>"; };
 		AF11DA3D22E4C2DE0031861F /* ConnectionUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionUtil.swift; sourceTree = "<group>"; };
 		AF11DA4622E52D380031861F /* NSNumberExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NSNumberExtension.swift; sourceTree = "<group>"; };
+		AF11DA4922E677C00031861F /* BannerTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerTableViewCell.swift; sourceTree = "<group>"; };
+		AF11DA4F22E67C070031861F /* UIViewExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtension.swift; sourceTree = "<group>"; };
+		AF11DA5222E685850031861F /* UILabelExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UILabelExtension.swift; sourceTree = "<group>"; };
 		AF74B1B122E3CA4E00C8D757 /* PeixeUrbano.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeixeUrbano.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF74B1B422E3CA4E00C8D757 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AF74B1BC22E3CA4E00C8D757 /* PeixeUrbano.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PeixeUrbano.xcdatamodel; sourceTree = "<group>"; };
@@ -197,9 +206,11 @@
 			children = (
 				AF11DA3D22E4C2DE0031861F /* ConnectionUtil.swift */,
 				AF74B22122E3E84100C8D757 /* DateExtension.swift */,
+				AF11DA4622E52D380031861F /* NSNumberExtension.swift */,
 				AF74B22422E3E86E00C8D757 /* StringExtension.swift */,
 				AF74B1F722E3D4AD00C8D757 /* UIColorExtension.swift */,
-				AF11DA4622E52D380031861F /* NSNumberExtension.swift */,
+				AF11DA5222E685850031861F /* UILabelExtension.swift */,
+				AF11DA4F22E67C070031861F /* UIViewExtension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -228,6 +239,7 @@
 		AF74B20C22E3DA1400C8D757 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				AF11DA4922E677C00031861F /* BannerTableViewCell.swift */,
 				AF74B20F22E3DDE400C8D757 /* DealTableViewCell.swift */,
 			);
 			path = Cells;
@@ -382,6 +394,7 @@
 			files = (
 				AF74B20822E3D58D00C8D757 /* CatalogViewController.swift in Sources */,
 				AF74B22B22E3EEEC00C8D757 /* Category.swift in Sources */,
+				AF11DA5322E685850031861F /* UILabelExtension.swift in Sources */,
 				AF11DA3822E4B33C0031861F /* DealFormat.swift in Sources */,
 				AF74B22222E3E84100C8D757 /* DateExtension.swift in Sources */,
 				AF74B1BD22E3CA4E00C8D757 /* PeixeUrbano.xcdatamodeld in Sources */,
@@ -393,6 +406,7 @@
 				AF74B20422E3D58D00C8D757 /* CatalogRouter.swift in Sources */,
 				AF74B22822E3EE0800C8D757 /* Mobile.swift in Sources */,
 				AF74B21422E3E53600C8D757 /* CatalogReponse.swift in Sources */,
+				AF11DA4A22E677C00031861F /* BannerTableViewCell.swift in Sources */,
 				AF74B22F22E4004900C8D757 /* Name.swift in Sources */,
 				AF11DA3522E4B14F0031861F /* NSNumberCodable.swift in Sources */,
 				AF11DA3B22E4C0C70031861F /* CatalogType.swift in Sources */,
@@ -403,6 +417,7 @@
 				AF11DA3222E4AEC30031861F /* BuyingOption.swift in Sources */,
 				AF74B21022E3DDE400C8D757 /* DealTableViewCell.swift in Sources */,
 				AF74B20A22E3D58D00C8D757 /* CatalogInteractor.swift in Sources */,
+				AF11DA5022E67C070031861F /* UIViewExtension.swift in Sources */,
 				AF74B22522E3E86E00C8D757 /* StringExtension.swift in Sources */,
 				AF74B1F822E3D4AD00C8D757 /* UIColorExtension.swift in Sources */,
 				AF74B23822E403A900C8D757 /* Partner.swift in Sources */,
@@ -430,9 +445,12 @@
 				AF74B23922E403A900C8D757 /* Partner.swift in Sources */,
 				AF74B1F322E3D0A200C8D757 /* HomeTabBarController.swift in Sources */,
 				AF74B23322E400D500C8D757 /* Deal.swift in Sources */,
+				AF11DA5422E685850031861F /* UILabelExtension.swift in Sources */,
+				AF11DA5122E67C070031861F /* UIViewExtension.swift in Sources */,
 				AF74B23022E4004900C8D757 /* Name.swift in Sources */,
 				AF74B23622E401C600C8D757 /* OptionType.swift in Sources */,
 				AF11DA3F22E4C2DE0031861F /* ConnectionUtil.swift in Sources */,
+				AF11DA4B22E677C00031861F /* BannerTableViewCell.swift in Sources */,
 				AF74B22922E3EE0800C8D757 /* Mobile.swift in Sources */,
 				AF74B21922E3E57700C8D757 /* ServerResponse.swift in Sources */,
 				AF11DA3622E4B14F0031861F /* NSNumberCodable.swift in Sources */,

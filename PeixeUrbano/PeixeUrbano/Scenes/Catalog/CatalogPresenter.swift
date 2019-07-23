@@ -15,7 +15,9 @@ import UIKit
 protocol CatalogPresentationLogic {
     func presentCatalog(response: Catalog.CatalogModel.Response)
     func presentImage(response: Catalog.ImageModel.Response)
+    func presentBanner(response: Catalog.Banners.Response)
     func presentLoader(response: Catalog.Loader.Response)
+    func presentFavorite(response: Catalog.Favorite.Response)
     func presentError(response: Error)
 }
 
@@ -24,35 +26,51 @@ class CatalogPresenter: CatalogPresentationLogic {
     // MARK: - Variables
     weak var viewController: CatalogDisplayLogic?
     
+    private func transformToDealModel(deal: Deal, currencySymbol: String) -> Catalog.CatalogModel.ViewModel.DealModel {
+        let priceDescription: String!
+        let isImageCuttedVisible: Bool!
+        let favoriteImage: UIImage? = deal.isFavorite ? UIImage(named: "heartFilled") : UIImage(named: "heart")
+        if deal.dealFormat == .fullContent {
+            isImageCuttedVisible = true
+            priceDescription = currencySymbol + " \(deal.fullPrice.value?.formatToCurrencyWithOutSymbol() ?? "-")"
+        } else {
+            isImageCuttedVisible = false
+            if deal.buyingOptions.count > 1 {
+                priceDescription = "A partir de"
+            } else {
+                priceDescription = "Por apenas"
+            }
+        }
+        let dealModel = Catalog.CatalogModel.ViewModel.DealModel(isImageCuttedVisible: isImageCuttedVisible,
+                                                                 imageUrl: deal.images[0].imageUrl,
+                                                                 partnerName: deal.partner.name.value,
+                                                                 title: deal.shortTitle,
+                                                                 priceDescription: priceDescription,
+                                                                 priceSymbol: currencySymbol,
+                                                                 price: deal.minSalePrice.value?.formatToCurrencyWithOutSymbol() ?? "-",
+                                                                 favoriteImage: favoriteImage)
+        return dealModel
+    }
+    
+    private func transformToBannerModel(banner: Banner) -> Catalog.CatalogModel.ViewModel.BannerModel {
+        let bannerModel = Catalog.CatalogModel.ViewModel.BannerModel(imageUrl: banner.mobile.imageUrl)
+        return bannerModel
+    }
+    
     // MARK: - Presenter
     func presentCatalog(response: Catalog.CatalogModel.Response) {
         var arrayDeals: [Catalog.CatalogModel.ViewModel.DealModel] = []
+        var arrayBanners: [Catalog.CatalogModel.ViewModel.BannerModel] = []
         let currencySymbol = Locale(identifier: "pt-Br").currencySymbol ?? "$"
         for deal in response.catalog.deals {
-            let priceDescription: String!
-            let isImageCuttedVisible: Bool!
-            if deal.dealFormat == .fullContent {
-                isImageCuttedVisible = true
-                priceDescription = currencySymbol + " \(deal.fullPrice.value?.formatToCurrencyWithOutSymbol() ?? "-")"
-            } else {
-                isImageCuttedVisible = false
-                if deal.buyingOptions.count > 1 {
-                    priceDescription = "A partir de"
-                } else {
-                    priceDescription = "Por apenas"
-                }
-            }
-            let dealModel = Catalog.CatalogModel.ViewModel.DealModel(isImageCuttedVisible: isImageCuttedVisible,
-                                                                     imageUrl: deal.images[0].imageUrl,
-                                                                     partnerName: deal.partner.name.value,
-                                                                     title: deal.shortTitle,
-                                                                     priceDescription: priceDescription,
-                                                                     priceSymbol: currencySymbol,
-                                                                     price: deal.minSalePrice.value?.formatToCurrencyWithOutSymbol() ?? "-")
+            let dealModel = transformToDealModel(deal: deal, currencySymbol: currencySymbol)
             arrayDeals.append(dealModel)
         }
-        
-        let viewModel = Catalog.CatalogModel.ViewModel(banners: response.catalog.banners,
+        for banner in response.catalog.banners {
+            let bannerModel = transformToBannerModel(banner: banner)
+            arrayBanners.append(bannerModel)
+        }
+        let viewModel = Catalog.CatalogModel.ViewModel(banners: arrayBanners,
                                                        deals: arrayDeals)
         viewController?.displayCatalog(viewModel: viewModel)
     }
@@ -63,9 +81,21 @@ class CatalogPresenter: CatalogPresentationLogic {
         viewController?.displayImage(viewModel: viewModel)
     }
     
+    func presentBanner(response: Catalog.Banners.Response) {
+        let viewModel = Catalog.Banners.ViewModel(image: response.image,
+                                                  index: response.index)
+        viewController?.displayBanner(viewModel: viewModel)
+    }
+    
     func presentLoader(response: Catalog.Loader.Response) {
         let viewModel = Catalog.Loader.ViewModel(isLoaderVisible: response.isLoaderVisible)
         viewController?.displayLoader(viewModel: viewModel)
+    }
+    
+    func presentFavorite(response: Catalog.Favorite.Response) {
+        let favoriteImage: UIImage? = response.isFavorite ? UIImage(named: "heartFilled") : UIImage(named: "heart")
+        let viewModel = Catalog.Favorite.ViewModel(favoriteImage: favoriteImage, row: response.row)
+        viewController?.displayFavorite(viewModel: viewModel)
     }
     
     func presentError(response: Error) {
