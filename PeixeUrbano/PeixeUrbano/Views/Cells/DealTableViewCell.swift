@@ -8,20 +8,33 @@
 
 import UIKit
 
+/// The methods declared by DealTableViewCellDelegate handle the user interaction on DealTableViewCell.
 protocol DealTableViewCellDelegate: NSObjectProtocol {
+    /// The method called after the touchUpInside event on the favorite button.
+    ///
+    /// - Parameter tag: The tag value of the button.
     func didTouchUpInsideFavorite(on tag: Int)
 }
 
+/// An UITableViewCell that displays deal information.
 class DealTableViewCell: UITableViewCell {
     
     //MARK: - Visual Components
+    /// An UIImageView that shows the deal's image.
     weak var imageViewDeal: UIImageView!
+    /// An UIImageView that shows the image of a line overhead the price description's label.
     weak var imageViewCutted: UIImageView!
+    /// An UILabel that shows the Partner's name.
     weak var labelPartnerName: UILabel!
+    /// An UILabel that shows the deal's short title.
     weak var labelDealTitle: UILabel!
+    /// An UILabel that shows the description above the price value.
     weak var labelDealPriceDescription: UILabel!
+    /// An UILabel that shows the currency symbol on the left of the price value.
     weak var labelDealPriceSymbol: UILabel!
+    /// An UILabel that shows the deal's minimum sale price.
     weak var labelDealPrice: UILabel!
+    /// An UIButton that shows the deal's favorite status.
     weak var buttonFavorite: UIButton!
     private weak var gradientLayer: CAGradientLayer!
     private let imageViewDealHeight: CGFloat = 250
@@ -39,13 +52,13 @@ class DealTableViewCell: UITableViewCell {
     }
     
     //MARK: - Actions
-    @objc func actionFavorite(sender: UIButton) {
+    @objc private func actionFavorite(sender: UIButton) {
         delegate?.didTouchUpInsideFavorite(on: sender.tag)
     }
     
     //MARK: - Layout
     private func prepareLayout() {
-        createComponents()
+        createVisualComponents()
         layoutLabels()
         layoutImage()
         layoutButton()
@@ -53,7 +66,7 @@ class DealTableViewCell: UITableViewCell {
         configButtonAction()
     }
     
-    private func createComponents() {
+    private func createVisualComponents() {
         let viewTop = UIView()
         let viewPriceDescription = UIView()
         let imageViewDeal = UIImageView()
@@ -111,19 +124,19 @@ class DealTableViewCell: UITableViewCell {
     
     private func layoutLabels() {
         labelDealTitle.numberOfLines = 2
-        labelPartnerName.set(textColor: UIColor.textLightGray,
+        labelPartnerName.set(textColor: .textLightGray,
                              font: UIFont.systemFont(ofSize: 16),
                              textAlignment: .left)
-        labelDealTitle.set(textColor: UIColor.textBlack,
+        labelDealTitle.set(textColor: .textBlack,
                            font: UIFont.systemFont(ofSize: 16),
                            textAlignment: .left)
-        labelDealPriceDescription.set(textColor: UIColor.textGray,
+        labelDealPriceDescription.set(textColor: .textGray,
                                       font: UIFont.systemFont(ofSize: 14),
                                       textAlignment: .center)
-        labelDealPriceSymbol.set(textColor: UIColor.mainOrange,
+        labelDealPriceSymbol.set(textColor: .mainOrange,
                                  font: UIFont.systemFont(ofSize: 14),
                                  textAlignment: .center)
-        labelDealPrice.set(textColor: UIColor.mainOrange,
+        labelDealPrice.set(textColor: .mainOrange,
                            font: UIFont.systemFont(ofSize: 18, weight: .semibold),
                            textAlignment: .center)
         

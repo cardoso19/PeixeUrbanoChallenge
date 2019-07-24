@@ -13,11 +13,37 @@
 import UIKit
 
 protocol CatalogDisplayLogic: class {
+    /// Display catalog information.
+    ///
+    /// It shows information about banners and deals.
+    ///
+    /// - Parameter viewModel: The data to be displayed.
     func displayCatalog(viewModel: Catalog.CatalogModel.ViewModel)
+    /// Display an image.
+    ///
+    /// It displays a deal's image on a cell.
+    ///
+    /// - Parameter viewModel: The data to be displayed.
     func displayImage(viewModel: Catalog.ImageModel.ViewModel)
+    /// Display a banner image.
+    ///
+    /// It displays a banner's image on a cell.
+    ///
+    /// - Parameter viewModel: The data to be displayed.
     func displayBanner(viewModel: Catalog.Banners.ViewModel)
+    /// Display and hide the loader on the screen.
+    ///
+    /// - Parameter viewModel: The data to be displayed.
     func displayLoader(viewModel: Catalog.Loader.ViewModel)
+    /// Display a favorite image.
+    ///
+    /// It displays a favorite image on a cell.
+    ///
+    /// - Parameter viewModel: The data to be displayed.
     func displayFavorite(viewModel: Catalog.Favorite.ViewModel)
+    /// Display an error.
+    ///
+    /// - Parameter viewModel: The data to be displayed.
     func displayError(viewModel: Error)
 }
 
@@ -82,7 +108,7 @@ class CatalogViewController: UIViewController {
     //MARK: - Config Components
     private func prepareComponents() {
         createVisualComponents()
-        setDelegatesnAndDataSources()
+        setTablewViewDelegate()
         registerCells()
         layoutTableView()
         layoutLoader()
@@ -95,7 +121,7 @@ class CatalogViewController: UIViewController {
         tableViewContent = tableView
     }
     
-    private func setDelegatesnAndDataSources() {
+    private func setTablewViewDelegate() {
         tableViewContent.dataSource = self
     }
     

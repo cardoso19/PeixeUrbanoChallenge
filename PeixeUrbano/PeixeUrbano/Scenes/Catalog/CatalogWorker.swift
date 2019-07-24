@@ -14,6 +14,9 @@ import UIKit
 
 class CatalogWorker {
     
+    /// Request the catalog information.
+    ///
+    /// - Parameter request: The data to create a request.
     func requestDeals(request: Catalog.CatalogModel.Request) {
         ConnectionUtil.shared.request(on: request.type.requestURL,
                                       method: .get,
@@ -21,11 +24,17 @@ class CatalogWorker {
                                       completion: request.completion)
     }
     
+    /// Download a deal's image.
+    ///
+    /// - Parameter request: The data to create a request.
     func requestImage(request: Catalog.ImageModel.WorkerRequest) {
         ConnectionUtil.shared.downloadImage(on: URL(string: request.url),
                                             completion: request.completion)
     }
     
+    /// Download a banner's image.
+    ///
+    /// - Parameter request: The data to create a request.
     func requestBanner(request: Catalog.Banners.WorkerRequest) {
         ConnectionUtil.shared.downloadImage(on: URL(string: request.url)) { result in
             request.completion(request.index, result)

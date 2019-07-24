@@ -13,15 +13,30 @@
 import UIKit
 
 protocol CatalogBusinessLogic {
+    /// Select the screen's catalog type.
+    ///
+    /// - Parameter request: The data to create a request.
     func selectCatalogType(request: Catalog.TypeModel.Request)
+    /// Do the catalog request.
     func doCatalogRequest()
+    /// Do the image's download request.
+    ///
+    /// - Parameter request: The data to create a request.
     func doDownloadImage(request: Catalog.ImageModel.Request)
+    /// Do all the banners' image download request.
+    ///
+    /// - Parameter request: The data to create a request.
     func doDownloadBanners(request: Catalog.Banners.Request)
+    /// Do the enable or disable logic of the favorite button.
+    ///
+    /// - Parameter request: The data to create a request.
     func doFavorite(request: Catalog.Favorite.Request)
 }
 
 protocol CatalogDataStore {
+    /// The type of catalog showed on the screen.
     var type: CatalogType! { get set }
+    /// The deals showed on the screen.
     var deals: [Deal]? { get set }
 }
 

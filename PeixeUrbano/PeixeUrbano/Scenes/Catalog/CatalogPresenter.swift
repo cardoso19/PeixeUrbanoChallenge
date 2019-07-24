@@ -13,11 +13,31 @@
 import UIKit
 
 protocol CatalogPresentationLogic {
+    /// Present catalog information.
+    ///
+    /// It presents information about banners and deals.
+    ///
+    /// - Parameter response: The data to be formatted.
     func presentCatalog(response: Catalog.CatalogModel.Response)
+    /// Present deal's image.
+    ///
+    /// - Parameter response: The data to be formatted.
     func presentImage(response: Catalog.ImageModel.Response)
+    /// Present banner's image
+    ///
+    /// - Parameter response: The data to be formatted.
     func presentBanner(response: Catalog.Banners.Response)
+    /// Present loader.
+    ///
+    /// - Parameter response: The data to be formatted.
     func presentLoader(response: Catalog.Loader.Response)
+    /// Present the image corresponding to the favorite state.
+    ///
+    /// - Parameter response: The data to be formatted.
     func presentFavorite(response: Catalog.Favorite.Response)
+    /// Present an error.
+    ///
+    /// - Parameter response: The data to be formatted.
     func presentError(response: Error)
 }
 

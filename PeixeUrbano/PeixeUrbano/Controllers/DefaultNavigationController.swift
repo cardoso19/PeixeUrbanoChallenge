@@ -13,17 +13,12 @@ class DefaultNavigationController: UINavigationController {
     //MARK: - Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        configColors()
-        configButtons()
+        prepareLayout()
     }
     
     //MARK: - Layout
-    private func configColors() {
-        navigationBar.barTintColor = UIColor.mainBlue
+    private func prepareLayout() {
+        navigationBar.barTintColor = .mainBlue
         navigationBar.tintColor = .white
-    }
-    
-    private func configButtons() {
-        
     }
 }

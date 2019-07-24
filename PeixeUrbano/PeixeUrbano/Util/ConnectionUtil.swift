@@ -19,13 +19,23 @@ typealias Parameters = [String: Any]
 
 class ConnectionUtil {
     
-    private init() {}
-    
+    //MARK: - Variables
     static let shared = ConnectionUtil()
     private var downloadSession = URLSession(configuration: .ephemeral)
     private var activeDownloads: [String: URLSessionTask] = [:]
     private var imageCache = NSCache<NSString, UIImage>()
     
+    //MARK: - Life Cycle
+    private init() {}
+    
+    //MARK: - Requests
+    /// Make a request.
+    ///
+    /// - Parameters:
+    ///   - url: The request's url.
+    ///   - method: The HTTP method used on the request.
+    ///   - parameters: The request's parameters.
+    ///   - completion: A block object to be executed when the request ends.
     func request<T>(on url: URL?, method: HTTPMethod, parameters: Parameters?, completion: @escaping (_ result: Result<T,Error>) -> Void) where T: Codable {
         guard
             let url = url
@@ -67,6 +77,11 @@ class ConnectionUtil {
         task.resume()
     }
     
+    /// Download an image.
+    ///
+    /// - Parameters:
+    ///   - url: The image's url.
+    ///   - completion: A block object to be executed when the download ends.
     func downloadImage(on url: URL?, completion: @escaping (_ result: Result<UIImage, Error>) -> Void) {
         guard
             let url = url

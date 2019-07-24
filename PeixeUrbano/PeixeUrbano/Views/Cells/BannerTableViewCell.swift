@@ -8,11 +8,12 @@
 
 import UIKit
 
+/// An UITableViewCell that displays banner information.
 class BannerTableViewCell: UITableViewCell {
     
     //MARK: - Visual Components
-    private weak var scrollView: UIScrollView!
-    private weak var pageControl: UIPageControl!
+    private weak var scrollViewContent: UIScrollView!
+    private weak var pageControlContent: UIPageControl!
     private let scrollViewHeight: CGFloat = 280
     private var arrayBannersView: [UIImageView]?
     
@@ -28,13 +29,24 @@ class BannerTableViewCell: UITableViewCell {
     }
     
     //MARK: - Content
+    /// Define the number of banners that the cells will own.
+    ///
+    /// With this value, the method will resize the de content size of scrollView to (number) times the screen width
+    /// and create (number) image views to hold each banner image.
+    ///
+    /// - Parameter number: The number of banners.
     func setNumberOfBanners(_ number: Int) {
-        pageControl.numberOfPages = number
-        scrollView.contentSize = CGSize(width: UIScreen.main.bounds.size.width * CGFloat(number),
+        pageControlContent.numberOfPages = number
+        scrollViewContent.contentSize = CGSize(width: UIScreen.main.bounds.size.width * CGFloat(number),
                                         height: scrollViewHeight)
         createBannersViews(number: number)
     }
     
+    /// Add an image in the image view at the index.
+    ///
+    /// - Parameters:
+    ///   - image: The image that will be defined.
+    ///   - index: The index of image view.
     func add(image: UIImage?, at index: Int) {
         arrayBannersView?[index].image = image
     }
@@ -47,7 +59,7 @@ class BannerTableViewCell: UITableViewCell {
                                                                       y: 0),
                                                       size: CGSize(width: UIScreen.main.bounds.size.width,
                                                                    height: scrollViewHeight)))
-            scrollView.addSubview(imageView)
+            scrollViewContent.addSubview(imageView)
             arrayBannersView?.append(imageView)
         }
     }
@@ -62,19 +74,19 @@ class BannerTableViewCell: UITableViewCell {
     
     //MARK: - Layout
     private func prepareLayout() {
-        createComponents()
+        createVisualComponents()
         configScrollView()
         configPageControl()
     }
     
-    private func createComponents() {
+    private func createVisualComponents() {
         let scrollView = UIScrollView()
         let pageControl = UIPageControl()
         addSubview(scrollView)
         addSubview(pageControl)
         
-        self.scrollView = scrollView
-        self.pageControl = pageControl
+        self.scrollViewContent = scrollView
+        self.pageControlContent = pageControl
         UIView.disableTranslatesAutoresizingMaskIntoConstraints(on: [scrollView,
                                                                      pageControl])
         createConstraints(on: ["scrollView": scrollView,
@@ -83,16 +95,16 @@ class BannerTableViewCell: UITableViewCell {
     }
     
     private func configScrollView() {
-        scrollView.isPagingEnabled = true
-        scrollView.delegate = self
+        scrollViewContent.isPagingEnabled = true
+        scrollViewContent.delegate = self
     }
     
     private func configPageControl() {
-        pageControl.isUserInteractionEnabled = false
+        pageControlContent.isUserInteractionEnabled = false
     }
     
     private func createConstraints(on views: [String: UIView]) {
-        guard let pageControl = pageControl
+        guard let pageControl = pageControlContent
             else {
                 fatalError("Error page control not defined.")
         }
@@ -130,6 +142,6 @@ extension BannerTableViewCell: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let screenWidth = UIScreen.main.bounds.size.width
         let page: Int = Int(scrollView.contentOffset.x / screenWidth)
-        pageControl.currentPage = page
+        pageControlContent.currentPage = page
     }
 }
