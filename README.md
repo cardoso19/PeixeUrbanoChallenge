@@ -1,8 +1,8 @@
 # Peixe Urbano Challenge
 
-[![Build Status](https://travis-ci.com/cardoso19/PeixeUrbanoChallenge.svg?branch=master)](https://github.com/cardoso19/PeixeUrbanoChallenge) [![Platforms](https://img.shields.io/badge/platforms-iOS-lightgrey.svg)](https://github.com/cardoso19/PeixeUrbanoChallenge) [![Swift](https://img.shields.io/badge/Swift-5.0-orange.svg)](https://swift.org) [![Xcode](https://img.shields.io/badge/Xcode-10.2.1-blue.svg)](https://developer.apple.com/xcode) [![MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://travis-ci.com/cardoso19/PeixeUrbanoChallenge.svg?branch=master)](https://travis-ci.org/cardoso19/PeixeUrbanoChallenge) [![Platforms](https://img.shields.io/badge/platforms-iOS-lightgrey.svg)](https://github.com/cardoso19/PeixeUrbanoChallenge) [![Swift](https://img.shields.io/badge/Swift-5.0-orange.svg)](https://swift.org) [![Xcode](https://img.shields.io/badge/Xcode-10.2.1-blue.svg)](https://developer.apple.com/xcode) [![MIT](https://img.shields.io/badge/License-MIT-red.svg)](https://opensource.org/licenses/MIT)
 
-It's an implementation of the Peixe Urbano app's home without using storyboards or xibs.
+It's an implementation of the Peixe Urbano app's home. All of the layouts were done without storyboards and xibs. The architecture used was Clean Swift, and was applied unit tests on Interactor and Present Layers.
 
 ## Requirements
 
@@ -17,4 +17,5 @@ Please make sure to update tests as appropriate.
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
+
 
